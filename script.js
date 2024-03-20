@@ -11,7 +11,7 @@ var noon = 12;
 var lunchTime = 12;
 var napTime = lunchTime + 2;
 var partyTime;
-var evening = 18;
+var evening = 17;
 
 let optionsData = [
     { value: "1", text: "1 AM - 2 AM" },
