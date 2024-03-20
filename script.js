@@ -1,12 +1,16 @@
 const wakeTimeSelector = document.getElementById('wakeUpTimeSelector');
 const lunchTimeSelector = document.getElementById('lunchTimeSelector');
 const napTimeSelector = document.getElementById('napTimeSelector');
+const clock = document.getElementById('clock');
+const catImage = document.getElementById('lolCatImage');
+const catMessageText = document.getElementById('catMessage');
+const partyTimeButton = document.getElementById('partyTimeButton');
 
-var wakeuptime = 7;
+var wakeUpTime = 7;
 var noon = 12;
-var lunchtime = 12;
-var naptime = lunchtime + 2;
-var partytime;
+var lunchTime = 12;
+var napTime = lunchTime + 2;
+var partyTime;
 var evening = 18;
 
 let optionsData = [
@@ -42,11 +46,24 @@ optionsData.forEach(function(optionData) {
     addOption(napTimeSelector,optionData);
 });
 
-wakeTimeSelector.selectedIndex = wakeuptime;
-lunchTimeSelector.selectedIndex = lunchtime;
-napTimeSelector.selectedIndex = naptime;
+(function setTimeSelector() {
+    wakeTimeSelector.selectedIndex = wakeUpTime;
+    lunchTimeSelector.selectedIndex = lunchTime - 1;
+    napTimeSelector.selectedIndex = napTime;
 
-console.log(lunchTimeSelector.selectedIndex);
+    wakeTimeSelector.addEventListener('change',() => {
+        wakeUpTime = wakeTimeSelector.value; 
+        updateCat();
+    });
+    lunchTimeSelector.addEventListener('change',() => {
+        lunchTime = lunchTimeSelector.value; 
+        updateCat();
+    });
+    napTimeSelector.addEventListener('change',() => {
+        napTime = napTimeSelector.value; 
+        updateCat();
+    });
+})();
 
 function addOption(selector,optionData) {
     var option = document.createElement("option");
@@ -55,3 +72,82 @@ function addOption(selector,optionData) {
     selector.appendChild(option);
 }
 
+setInterval(() => {
+    clock.innerHTML = `${setClock()}`;
+}, 1000);
+
+function setClock() {
+    var currentTime = new Date(); 
+    var hours = currentTime.getHours();
+    var minutes = currentTime.getMinutes();
+    var seconds = currentTime.getSeconds();
+    var meridian = "AM";
+ 
+    if (hours >= noon) {
+        meridian = "PM";
+    }
+    if (hours > noon) {
+        hours = hours - 12;
+    }
+    if (minutes < 10) {
+        minutes = "0" + minutes;
+    }
+    if (seconds < 10) {
+        seconds = "0" + seconds;
+    }
+    var clockTime = hours + ':' + minutes + ':' + seconds + " " + meridian + "!";
+    return clockTime;
+}
+
+function partyEvent() {
+    if (partyTime < 0) {
+        partyTime = new Date().getHours();
+        partyTimeButton.innerText = 'Party Over!';
+        partyTimeButton.style.backgroundColor = "#0A8DAB";
+    } else {
+        partyTimeButton.innerText = 'Party Time!';
+        partyTime = -1;
+        partyTimeButton.style.backgroundColor = "#222";
+    }
+    updateCat();
+}
+
+updateCat();
+
+function updateCat() {
+    var time = new Date().getHours();
+    var image = "";
+    var catMessage = '';
+
+    if (time == partyTime) {
+        catMessage = `"let's party!"`;
+        image = "assets/partyTime.jpg";
+    } 
+    else if (time == wakeUpTime) {
+        catMessage = `"Wake Up!"`;
+        image = "assets/wakeTime.jpg";        
+    }
+    else if (time == lunchTime) {
+        catMessage = `"Let's have some lunch!"`;
+        image = "assets/lunchTime.jpg";        
+    }
+    else if (time == napTime) {
+        catMessage = `"Sleep tight!"`;
+        image = "assets/napTime.jpg";        
+    }
+    else if (time < noon) {
+        catMessage = `"Good morning!"`;
+        image = "assets/noonTime.jpeg";        
+    }
+    else if (time >= evening) {
+        catMessage = `"Good evening!"`;
+        image = "assets/Cat_sleep.jpg";        
+    } 
+    else {
+        catMessage = `"Good afternoon!"`;
+        image = "assets/normalTime.jpg";
+    }
+
+    catImage.src = image;
+    catMessageText.innerText = catMessage;
+}
